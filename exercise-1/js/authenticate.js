@@ -11,7 +11,7 @@ $(function() {
     };
     firebase.initializeApp(config);
 
-    $('form').on("submit", function() {
+    $('form').on("submit", function(event) {
         event.preventDefault();
         if (this.id == 'sign-up') {
             signUp();
@@ -35,8 +35,7 @@ $(function() {
                 }).then(function() {
                     window.location = 'index.html';
                 })
-            }
-        ).catch(function(error) {
+            }).catch(function(error) {
             alert(error.message);
         });
     };
@@ -48,37 +47,54 @@ $(function() {
     var signIn = function() {
         // Get email and password
         var email = $('#email').val();
-        var password = $('#password').val();
+        var password = $("#password").val();
 
         // Authenticate using email and password, then redirect
-        firebase.auth().signInWithEmailAndPassword(email, password).then(function() {
-            // window.location = 'index.html'
-            console.log(firebase.auth().currentUser);
-        }).catch(function(error) {
-            alert("Invalid email or password");
-        });
-    }
+        firebase.auth().signInWithEmailAndPassword(email, password)
+            .then(function() {
+                window.location = 'index.html';
+            })
+            .catch(function(error) {
+                alert(error);
+            });
+    };
+
+
 
     // Sign out: Function to log a user out of firebase
     var signOut = function() {
         // Sign out, then redirect
-
-
-
+        var auth = firebase.auth();
+        auth.signOut().then(
+            function() {
+                window.location = 'sign-in.html';
+            }).catch(function(error) {
+            alert("Couldn't sign out for some odd reason...")
+        })
     };
 
-    // Assign event lister to form submission
-
-
-
     // Assign click event to logout button
-
-
+    // Assign event lister to form submission
+    $('#log-out').on('click', function() {
+        signOut();
+    })
 
     // Authentication Change: see if a user is already signed in, and redirect
-
     // Rediriect to index.html if there is a user and the pathname isn't '/'
-
     // Redirect to sign-in if there is NOT a user and the pathname IS '/'
+    var checked = false; // create an undefined object
+    firebase.auth().onAuthStateChanged(function(user) {
+        if (checked !== true) {
+            if (user) {
+                window.location = 'index.html'
+            } else {
+                // window.location = 'sign-in.html'
+            }
+        }
+        checked = true;
+
+    });
+
+
 
 });
